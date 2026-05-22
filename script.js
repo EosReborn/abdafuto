@@ -1,4 +1,5 @@
 const THEME_KEY = "abdafuto-theme";
+const COOKIE_KEY = "abdafuto-cookie";
 
 const icons = {
   light:
@@ -13,8 +14,8 @@ function applyTheme(theme) {
   if (toggle) {
     const nextTheme = theme === "dark" ? "light" : "dark";
     toggle.innerHTML = theme === "dark" ? icons.light : icons.dark;
-    toggle.setAttribute("aria-label", `${nextTheme} tema bekapcsolasa`);
-    toggle.setAttribute("title", `${nextTheme} tema`);
+    toggle.setAttribute("aria-label", `${nextTheme} téma bekapcsolása`);
+    toggle.setAttribute("title", `${nextTheme} téma`);
   }
 }
 
@@ -28,15 +29,90 @@ function initThemeToggle() {
   applyTheme(savedTheme);
 
   toggle.addEventListener("click", () => {
-    const current = document.body.dataset.theme === "dark" ? "dark" : "light";
-    const next = current === "dark" ? "light" : "dark";
+    const next = document.body.dataset.theme === "dark" ? "light" : "dark";
     localStorage.setItem(THEME_KEY, next);
     applyTheme(next);
   });
 }
 
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initThemeToggle);
-} else {
+function initScrollAnimations() {
+  if (!("IntersectionObserver" in window)) return;
+
+  const selectors = [
+    ".slide-card",
+    ".service-box",
+    ".lead-cta",
+    ".features",
+    ".custom-build",
+    ".maps",
+    ".hours",
+    ".subpage-hero",
+    ".contact-grid > *",
+    ".feature-list li",
+    ".site-footer",
+  ];
+
+  const targets = document.querySelectorAll(selectors.join(","));
+  targets.forEach((el) => el.classList.add("anim-hidden"));
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.remove("anim-hidden");
+          entry.target.classList.add("anim-visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.08, rootMargin: "0px 0px -30px 0px" }
+  );
+
+  targets.forEach((el) => observer.observe(el));
+}
+
+function initCookieBanner() {
+  if (localStorage.getItem(COOKIE_KEY)) return;
+
+  const banner = document.createElement("div");
+  banner.className = "cookie-banner";
+  banner.id = "cookieBanner";
+  banner.setAttribute("role", "dialog");
+  banner.setAttribute("aria-label", "Süti hozzájárulás");
+  banner.innerHTML = `
+    <div class="cookie-inner">
+      <p>Weboldalunk sütiket (cookie-kat) használ a jobb felhasználói élmény biztosítása érdekében. Az oldal böngészésével elfogadja a süti-szabályzatunkat.</p>
+      <div class="cookie-actions">
+        <a class="cookie-link" href="https://www.abdafuto.hu/adatvedelmi-iranyelvek/" target="_blank" rel="noreferrer">Adatvédelmi irányelvek</a>
+        <button class="cookie-decline" id="cookieDecline" type="button">Elutasítom</button>
+        <button class="cookie-accept" id="cookieAccept" type="button">Elfogadom</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(banner);
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => banner.classList.add("cookie-visible"));
+  });
+
+  function dismiss(value) {
+    localStorage.setItem(COOKIE_KEY, value);
+    banner.classList.remove("cookie-visible");
+    banner.addEventListener("transitionend", () => banner.remove(), { once: true });
+  }
+
+  document.getElementById("cookieAccept").addEventListener("click", () => dismiss("accepted"));
+  document.getElementById("cookieDecline").addEventListener("click", () => dismiss("declined"));
+}
+
+function init() {
   initThemeToggle();
+  initScrollAnimations();
+  initCookieBanner();
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
 }
