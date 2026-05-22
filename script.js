@@ -105,8 +105,37 @@ function initCookieBanner() {
   document.getElementById("cookieDecline").addEventListener("click", () => dismiss("declined"));
 }
 
+function initHamburger() {
+  const toggle = document.querySelector(".nav-toggle");
+  const nav = document.querySelector(".main-nav");
+  if (!toggle || !nav) return;
+
+  toggle.addEventListener("click", () => {
+    const isOpen = nav.classList.toggle("nav-open");
+    toggle.setAttribute("aria-expanded", String(isOpen));
+    toggle.setAttribute("aria-label", isOpen ? "Menü bezárása" : "Menü megnyitása");
+  });
+
+  nav.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      nav.classList.remove("nav-open");
+      toggle.setAttribute("aria-expanded", "false");
+      toggle.setAttribute("aria-label", "Menü megnyitása");
+    });
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!nav.contains(e.target) && !toggle.contains(e.target)) {
+      nav.classList.remove("nav-open");
+      toggle.setAttribute("aria-expanded", "false");
+      toggle.setAttribute("aria-label", "Menü megnyitása");
+    }
+  });
+}
+
 function init() {
   initThemeToggle();
+  initHamburger();
   initScrollAnimations();
   initCookieBanner();
 }
