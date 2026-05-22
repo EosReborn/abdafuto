@@ -1,0 +1,16 @@
+{
+  "buildCommand": null,
+  "outputDirectory": ".",
+  "framework": null,
+  "rewrites": [
+    { "source": "/automento", "destination": "/automento.html" },
+    { "source": "/teherauto", "destination": "/teherauto.html" },
+    { "source": "/utanfuto-berles", "destination": "/utanfuto-berles.html" },
+    { "source": "/gep-kolcsonzo", "destination": "/gep-kolcsonzo.html" },
+    { "source": "/kapcsolat", "destination": "/kapcsolat.html" },
+    { "source": "/utanfuto-gyartas", "destination": "/utanfuto-gyartas.html" },
+    { "source": "/szemelyauto-berles", "destination": "/szemelyauto-berles.html" },
+    { "source": "/kisbusz-berles", "destination": "/kisbusz-berles.html" },
+    { "source": "/hasznaltauto-udvar", "destination": "/hasznaltauto-udvar.html" }
+  ]
+}
